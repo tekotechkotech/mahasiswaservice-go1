@@ -32,16 +32,6 @@ func (dto *UpadeMahasiswaNamaReqDTO) Validate() error {
 	return v.Validate()
 }
 
-type GetMahasiswaAlamatByIDReqDTO struct {
-	ID int64 `json:"id" valid:"required,integer,non_zero" validname:"id"`
-}
-
-func (dto *GetMahasiswaAlamatByIDReqDTO) Validate() error {
-	v := validator.NewValidate(dto)
-
-	return v.Validate()
-}
-
 type GetMahasiswaAlamatByIDRespDTO struct {
 	ID      int64            `json:"id"`
 	Nama    string           `json:"nama"`
@@ -53,3 +43,42 @@ type AlamatRespDTO struct {
 	Jalan   string `json:"jalan"`
 	NoRumah string `json:"no_rumah"`
 }
+
+// tugas 1
+// http://localhost:9000/api/v1/latihan/alamat
+// Method Post
+// Body :
+// {
+// 		"jalan": "foo",
+// 		"no_rumah": "234",
+// 		"mahasiswa_id : 1
+// }
+
+type MahasiswaAlamatReqDTO struct {
+	Jalan         string `json:"jalan" valid:"required" validname:"jalan"`
+	NoRumah       string `json:"no_rumah" valid:"required" validname:"no_rumah"`
+	id_mahasiswas int64  `json:"id_mahasiswas" valid:"required" validname:"id_mahasiswas"`
+}
+
+func (dto *MahasiswaAlamatReqDTO) Validate() error {
+	v := validator.NewValidate(dto)
+
+	return v.Validate()
+}
+
+// ///////////
+// {
+// 		succes : true,
+// 		message : get data succes,
+// 		data : {
+// 			id : 1,
+// 			nama : foo,
+// 			nim : bar,
+// 			alamat : [
+// 				{
+// 					jalan : foo,
+// 					no_rumah : bar,
+// 				}
+// 			]
+// 		}
+// 	}

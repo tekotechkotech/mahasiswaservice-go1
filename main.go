@@ -21,7 +21,7 @@ import (
 
 func main() {
 
-	errChan := make(chan error)
+	errChan := make(chan error) //
 
 	e := echo.New()
 	m := middleware.NewMidleware()

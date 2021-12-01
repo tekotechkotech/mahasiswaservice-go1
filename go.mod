@@ -1,4 +1,4 @@
-module github.com/medivh13/mahasiswaservice
+module github.com/tekotechkotech/mahasiswaservice-go1
 
 go 1.17
 

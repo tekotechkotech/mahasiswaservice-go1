@@ -23,11 +23,10 @@ func NewHttpHandler(e *echo.Echo, srv services.Services) {
 	}
 	e.GET("api/v1/latihan/ping", handler.Ping)
 	e.POST("api/v1/latihan/mahasiswa-alamat", handler.SaveMahasiswaAlamat)
-	e.PATCH("api/v1/latihan/mahasiswa", handler.UpdateMahasiswaNama)
-	e.GET("api/v1/latihan/mahasiswa-alamat", handler.GetMahasiswaAlamatByID)
-
+	e.PATCH("api/v1/latihan/mahasiswa", handler.UpdateMahasiswa)
 }
 
+// cek koneksi
 func (h *HttpHandler) Ping(c echo.Context) error {
 
 	version := os.Getenv("VERSION")
@@ -41,6 +40,7 @@ func (h *HttpHandler) Ping(c echo.Context) error {
 
 }
 
+// menyimpan
 func (h *HttpHandler) SaveMahasiswaAlamat(c echo.Context) error {
 	postDTO := dto.MahasiswaReqDTO{}
 	if err := c.Bind(&postDTO); err != nil {
@@ -77,7 +77,8 @@ func (h *HttpHandler) SaveMahasiswaAlamat(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
-func (h *HttpHandler) UpdateMahasiswaNama(c echo.Context) error {
+// UPDATE
+func (h *HttpHandler) UpdateMahasiswa(c echo.Context) error {
 	postDTO := dto.UpadeMahasiswaNamaReqDTO{}
 	if err := c.Bind(&postDTO); err != nil {
 		log.Error(err.Error())
@@ -113,8 +114,9 @@ func (h *HttpHandler) UpdateMahasiswaNama(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
-func (h *HttpHandler) GetMahasiswaAlamatByID(c echo.Context) error {
-	postDTO := dto.GetMahasiswaAlamatByIDReqDTO{}
+// UPDATE
+func (h *HttpHandler) InsertAlamatMahasiswa(c echo.Context) error {
+	postDTO := dto.MahasiswaAlamatReqDTO{}
 	if err := c.Bind(&postDTO); err != nil {
 		log.Error(err.Error())
 		return c.NoContent(http.StatusBadRequest)
@@ -130,7 +132,7 @@ func (h *HttpHandler) GetMahasiswaAlamatByID(c echo.Context) error {
 		})
 	}
 
-	data, err := h.service.GetMahasiswaAlamatByID(&postDTO)
+	err = h.service.InMahasiswaAlamat(&postDTO)
 	if err != nil {
 		log.Error(err.Error())
 		return c.JSON(getStatusCode(err), dto.ResponseDTO{
@@ -142,8 +144,8 @@ func (h *HttpHandler) GetMahasiswaAlamatByID(c echo.Context) error {
 
 	var resp = dto.ResponseDTO{
 		Success: true,
-		Message: mhsConst.GetDataSuccess,
-		Data:    data,
+		Message: mhsConst.SaveSuccess,
+		Data:    nil,
 	}
 
 	return c.JSON(http.StatusOK, resp)
