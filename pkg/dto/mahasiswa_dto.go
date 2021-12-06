@@ -54,31 +54,14 @@ type AlamatRespDTO struct {
 // 		"mahasiswa_id : 1
 // }
 
-type MahasiswaAlamatReqDTO struct {
-	Jalan         string `json:"jalan" valid:"required" validname:"jalan"`
-	NoRumah       string `json:"no_rumah" valid:"required" validname:"no_rumah"`
-	id_mahasiswas int64  `json:"id_mahasiswas" valid:"required" validname:"id_mahasiswas"`
+type AlamatIdReqDTO struct {
+	Jalan        string `json:"jalan"`
+	NoRumah      string `json:"no_rumah"`
+	IDMahasiswas int64  `json:"mahasiswa_id" valid:"required,integer,non_zero" validname:"mahasiswa_id"`
 }
 
-func (dto *MahasiswaAlamatReqDTO) Validate() error {
+func (dto *AlamatIdReqDTO) Validate() error {
 	v := validator.NewValidate(dto)
 
 	return v.Validate()
 }
-
-// ///////////
-// {
-// 		succes : true,
-// 		message : get data succes,
-// 		data : {
-// 			id : 1,
-// 			nama : foo,
-// 			nim : bar,
-// 			alamat : [
-// 				{
-// 					jalan : foo,
-// 					no_rumah : bar,
-// 				}
-// 			]
-// 		}
-// 	}

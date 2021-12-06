@@ -24,6 +24,8 @@ func NewHttpHandler(e *echo.Echo, srv services.Services) {
 	e.GET("api/v1/latihan/ping", handler.Ping)
 	e.POST("api/v1/latihan/mahasiswa-alamat", handler.SaveMahasiswaAlamat)
 	e.PATCH("api/v1/latihan/mahasiswa", handler.UpdateMahasiswa)
+	e.POST("api/v1/latihan/alamat", handler.SaveAlamatId)
+	e.GET("api/v1/latihan/mahasiswa-alamat", handler.ShowAllMahasiswaAlamat)
 }
 
 // cek koneksi
@@ -37,7 +39,6 @@ func (h *HttpHandler) Ping(c echo.Context) error {
 	data := version
 
 	return c.JSON(http.StatusOK, data)
-
 }
 
 // menyimpan
@@ -59,6 +60,42 @@ func (h *HttpHandler) SaveMahasiswaAlamat(c echo.Context) error {
 	}
 
 	err = h.service.SaveMahasiswaAlamat(&postDTO)
+	if err != nil {
+		log.Error(err.Error())
+		return c.JSON(getStatusCode(err), dto.ResponseDTO{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
+	}
+
+	var resp = dto.ResponseDTO{
+		Success: true,
+		Message: mhsConst.SaveSuccess,
+		Data:    nil,
+	}
+
+	return c.JSON(http.StatusOK, resp)
+}
+
+func (h *HttpHandler) SaveAlamatId(c echo.Context) error {
+	postDTO := dto.AlamatIdReqDTO{}
+	if err := c.Bind(&postDTO); err != nil { //bind = req ke variabel
+		log.Error(err.Error())
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	err := postDTO.Validate()
+	if err != nil {
+		log.Error(err.Error())
+		return c.JSON(getStatusCode(err), dto.ResponseDTO{
+			Success: false,
+			Message: err.Error(),
+			Data:    nil,
+		})
+	}
+
+	err = h.service.SaveAlamatId(&postDTO)
 	if err != nil {
 		log.Error(err.Error())
 		return c.JSON(getStatusCode(err), dto.ResponseDTO{
@@ -114,38 +151,13 @@ func (h *HttpHandler) UpdateMahasiswa(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
-// UPDATE
-func (h *HttpHandler) InsertAlamatMahasiswa(c echo.Context) error {
-	postDTO := dto.MahasiswaAlamatReqDTO{}
-	if err := c.Bind(&postDTO); err != nil {
-		log.Error(err.Error())
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	err := postDTO.Validate()
-	if err != nil {
-		log.Error(err.Error())
-		return c.JSON(getStatusCode(err), dto.ResponseDTO{
-			Success: false,
-			Message: err.Error(),
-			Data:    nil,
-		})
-	}
-
-	err = h.service.InMahasiswaAlamat(&postDTO)
-	if err != nil {
-		log.Error(err.Error())
-		return c.JSON(getStatusCode(err), dto.ResponseDTO{
-			Success: false,
-			Message: err.Error(),
-			Data:    nil,
-		})
-	}
+func (h *HttpHandler) ShowAllMahasiswaAlamat(c echo.Context) error {
+	Data, _ := h.service.ShowAllMahasiswaAlamat()
 
 	var resp = dto.ResponseDTO{
 		Success: true,
-		Message: mhsConst.SaveSuccess,
-		Data:    nil,
+		Message: mhsConst.GetDataSuccess,
+		Data:    Data,
 	}
 
 	return c.JSON(http.StatusOK, resp)
